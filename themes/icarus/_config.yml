@@ -52,7 +52,7 @@ article:
     # https://github.com/highlightjs/highlight.js/tree/master/src/styles
     highlight: atom-one-light
     # Whether to show article thumbnail images
-    thumbnail: true
+    thumbnail: false
     # Whether to show estimate article reading time
     readtime: true
 # Search plugin settings
@@ -72,24 +72,24 @@ donate:
         # Donation entry name
         type: alipay
         # Qrcode image URL
-        qrcode: ''
+        qrcode: '/images/支付宝收款码.jpg'
     -
         # Donation entry name
         type: wechat
         # Qrcode image URL
-        qrcode: ''
-    -
-        # Donation entry name
-        type: paypal
-        # Paypal business ID or email address
-        business: ''
-        # Currency code
-        currency_code: USD
-    -
-        # Donation entry name
-        type: patreon
-        # URL to the Patreon page
-        url: ''
+        qrcode: '/images/微信收款码.jpg'
+    #-
+    #    # Donation entry name
+    #    type: paypal
+    #    # Paypal business ID or email address
+    #    business: ''
+    #    # Currency code
+    #    currency_code: USD
+    #-
+    #    # Donation entry name
+    #    type: patreon
+    #    # URL to the Patreon page
+    #    url: ''
 # Share plugin settings
 # http://ppoffice.github.io/hexo-theme-icarus/categories/Configuration/Share-Plugins
 share:
@@ -232,3 +232,4 @@ providers:
     fontcdn: google
     # Name or URL of the webfont Icon CDN provider
     iconcdn: fontawesome
+
