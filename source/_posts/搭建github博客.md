@@ -6,6 +6,7 @@ categories:
 tags: 
     - github博客
     - hexo
+declare: true
 ---
 
 ## 背景
