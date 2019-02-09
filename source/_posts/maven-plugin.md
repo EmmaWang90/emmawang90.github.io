@@ -3,7 +3,7 @@ title: maven插件入门
 date: 2019-02-09 12:05:56
 tags:
     - maven
-    - plluin
+    - plugin
 categories:
     - maven
 ---
