@@ -70,7 +70,27 @@ public class MyQueryMojo
 在pom文件的插件中，通过configuration元素对插件进行配置，比如：
 
 ```xml
-
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-myquery-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <url>http://www.foobar.com/query</url>
+          <timeout>10</timeout>
+          <options>
+            <option>one</option>
+            <option>two</option>
+            <option>three</option>
+          </options>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  ...
+</project>
 ```
 
 其中configuration的子元素与Mojo类中字段的名称相同。
@@ -80,13 +100,13 @@ public class MyQueryMojo
 通过Mojo类字段上的@parameter expression，可在命令行中添加配置，如：
 
 ```bash
-
+mvn myquery:query -Dquery.url=http://maven.apache.org
 ```
 
 注意，在使用命令行配置前，到插件中确认配置的名称。可以使用help goal查询参数和类型，比如：
 
 ```bash
-
+mvn javadoc:help -Ddetail -Dgoal=javadoc
 ```
 
 
@@ -98,7 +118,51 @@ public class MyQueryMojo
 使用executions标签，最常用于配置作用于build生命周期某个阶段的插件，比如：
 
 ```xml
-
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-myquery-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>execution1</id>
+            <phase>test</phase>
+            <configuration>
+              <url>http://www.foo.com/query</url>
+              <timeout>10</timeout>
+              <options>
+                <option>one</option>
+                <option>two</option>
+                <option>three</option>
+              </options>
+            </configuration>
+            <goals>
+              <goal>query</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>execution2</id>
+            <configuration>
+              <url>http://www.bar.com/query</url>
+              <timeout>15</timeout>
+              <options>
+                <option>four</option>
+                <option>five</option>
+                <option>six</option>
+              </options>
+            </configuration>
+            <goals>
+              <goal>query</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  ...
+</project>
 ```
 
 这里有两个execution配置。其中，executions绑定到test阶段，execution2没有配置phase，使用默认阶段。如果这个goal有默认阶段，则插件会被执行，否则不会被执行。
@@ -108,13 +172,46 @@ public class MyQueryMojo
 如果一个插件中的两个execution被绑定到不同的phase，如下所示，这个插件会被执行多次。
 
 ```xml
-
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        ...
+        <executions>
+          <execution>
+            <id>execution1</id>
+            <phase>test</phase>
+            ...
+          </execution>
+          <execution>
+            <id>execution2</id>
+            <phase>install</phase>
+            <configuration>
+              <url>http://www.bar.com/query</url>
+              <timeout>15</timeout>
+              <options>
+                <option>four</option>
+                <option>five</option>
+                <option>six</option>
+              </options>
+            </configuration>
+            <goals>
+              <goal>query</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  ...
+</project>
 ```
 
 maven 3.3.1版本之后，可以在命令行中直接对某个execution进行配置：
 
 ```bash
-
+mvn myqyeryplugin:queryMojo@execution1
 ```
 
 ### 使用dependencies
@@ -157,6 +254,20 @@ maven 3.3.1版本之后，可以在命令行中直接对某个execution进行配
 默认情况，插件配置会被继承到子pom中，为了打破这种继承关系，可以使用inherited。
 
 ```xml
-
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.2</version>
+        <inherited>false</inherited>
+        ...
+      </plugin>
+    </plugins>
+  </build>
+  ...
+</project>
 ```
 
