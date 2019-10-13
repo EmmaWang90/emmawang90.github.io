@@ -15,7 +15,7 @@ Java是目前最流行的编程语言之一。根据Stackify，java开发人员�
 
 Java是最接近Ligua Franca(idiom meaning common language)的。是一个适用于桌面系统和服务器系统的可移植代码的计算平台，一处开发，全平台可用。Java是一种面向对象变成语言，拥有及时编译器。
 
-![](.\pictures\how-to-hire-a-java-developer.svg)
+![](./pictures/how-to-hire-a-java-developer.svg)
 
 ## Java开发工作者的检查列表
 
@@ -29,13 +29,13 @@ Java几乎每年都会变，发布新的版本和框架，所以需要有限考�
 
 熟练使用Java 语言，了解Java生态系统（相关库、编译、打包等），清楚地了解面向对象语言。另外，熟悉数据类型、线程、Servlet和基础的类加载机制。
 
-![](.\pictures\java-fresher-role-skills.jpg)
+![](./pictures/java-fresher-role-skills.jpg)
 
 ## 中级能力
 
 一般0~2年经验，擅长写高可读性、简洁的java代码，能够较好理解JavaScript、Servlets、Servlet方法和参数。
 
-![](.\pictures\junior-java-developer-role.jpg)
+![](./pictures/junior-java-developer-role.jpg)
 
 ### 网络应用或分布式应用
 
@@ -53,11 +53,11 @@ Java几乎每年都会变，发布新的版本和框架，所以需要有限考�
 
 3~6年经验。能写出优雅的代码，同时保证性能。基础扎实，掌握面向对象编程和J2EE。擅长处理问题和调试。As this role would also require the writing of some complex SQL queries，developers will need to hava hands-on experience with query handling. 因为内存相关问题也很常见，好的开发者还要深入了解运行时和垃圾回收机制。
 
-![](.\pictures\senior-java-developer-role-skills.jpg)
+![](./pictures/senior-java-developer-role-skills.jpg)
 
 ## Java架构师技能
 
 架构师需要由相当多的Java编程经验。必须精通与处理异常、多线程、类的基础功能、数据类型，还需要由J2EE的经验、了解Hibernate、Core & Session接口，擅长设计模板和SQL。
 
-![](.\pictures\java-architect-role-skills.jpg)
+![](./pictures/java-architect-role-skills.jpg)
 
