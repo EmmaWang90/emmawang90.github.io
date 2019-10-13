@@ -1,0 +1,2 @@
+hexo generate -d
+

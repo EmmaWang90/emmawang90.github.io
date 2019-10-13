@@ -1,0 +1,4 @@
+1、新建文章 hexo new "文章名称"
+2、生成静态文件并立即部署网站  hexo generate -d
+3、启动服务器，默认访问网址为http://localhost:4000/  hexo server
+4、清理缓存文件 hexo clean
