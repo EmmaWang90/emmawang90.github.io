@@ -81,3 +81,14 @@ deploy:
   type: git
   repository: git@github.com:EmmaWang90/emmawang90.github.io.git
   branch: master
+
+# Extensions
+## Plugins: http://hexo.io/plugins/
+#RSS订阅
+plugins:
+   hexo-generator-feed
+#Feed Atom
+feed:
+   type: atom
+   path: atom.xml
+   limit: 20
