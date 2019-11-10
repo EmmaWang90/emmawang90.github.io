@@ -3,7 +3,7 @@ version: 2.3.0
 # Path or URL to the website's icon
 favicon: /images/horse.jpg
 # Path or URL to RSS atom.xml
-rss: 
+rss: /atom.xml
 # Path or URL to the website's logo to be shown on the left of the navigation bar or footer
 logo: /images/horse.jpg
 # Open Graph metadata
@@ -27,6 +27,7 @@ navbar:
         归档: /archives
         分类: /categories
         标签: /tags
+        RSS: /atom.xml
         #关于: /about
     # Navigation bar links to be shown on the right
     links:
@@ -144,9 +145,9 @@ widgets:
             #Dribbble:
             #    icon: fab fa-dribbble
             #    url: 'http://dribbble.com'
-            #RSS:
-            #    icon: fas fa-rss
-            #    url: /
+            RSS:
+                icon: fas fa-rss
+                url: /atom.xml
     -
         # Widget name
         type: toc
