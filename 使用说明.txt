@@ -2,3 +2,7 @@
 2、生成静态文件并立即部署网站  hexo generate -d
 3、启动服务器，默认访问网址为http://localhost:4000/  hexo server
 4、清理缓存文件 hexo clean
+
+添加图片时
+1、将图片拷贝到/themes/icarus/source/images中。
+2、在文章中访问路径为../../../../../../images/图片名称加后缀。
