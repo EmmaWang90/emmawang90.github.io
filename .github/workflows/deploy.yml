@@ -66,5 +66,5 @@ jobs:
     - name: 部署博客
       run: |
         rm -rf .deploy_git
-        hexo g && hexo douban && hexo deploy
+        hexo g  && hexo deploy
         rm ~/.ssh/id_rsa
