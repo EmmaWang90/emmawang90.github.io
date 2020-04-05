@@ -7,30 +7,64 @@ jobs:
   build: # job1 id
     runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
     name: A job to deploy blog.
+    strategy:
+      matrix:
+        node-version: [10.15.1]
     steps:
     - name: Checkout # step1 获取源码
       uses: actions/checkout@v1 # 使用 actions/checkout@v1
       with: # 条件
         submodules: true # Checkout private submodules(themes or something else). 当有子模块时切换分支？
 
-    # Caching dependencies to speed up workflows. (GitHub will remove any cache entries that have not been accessed in over 7 days.) 缓存压缩 node_modules，不用每次下载，使用时解压，可以加快工作流的执行过程，超过 7 天没有使用将删除压缩包。
-    - name: Cache node modules # step2
-      uses: actions/cache@v1
-      id: cache
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Install Dependencies # step3 name
-      if: steps.cache.outputs.cache-hit != 'true' # 如果变量 cache-hit 不等于 true
-      run: npm install # 安装 node modules 相关依赖
+    - name: 设置 Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    # Deploy hexo blog website.
-    - name: Deploy # step4
-      id: deploy
-      uses: sma11black/hexo-action@v1.0.0
-      with:
-        deploy_key: ${{ secrets.DEPLOY_KEY }}
-        user_name: github-action
-        user_email: wdanmail@163.com
+    - name: 配置 Git 环境
+      env:
+        ACTION_DEPLOY_KEY: ${{secrets.DEPLOY_KEY}}
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        git config --global user.name "github-action"
+        git config --global user.email "wdanmail@163.com"
+    - name: 安装 Hexo CI
+      run: |
+        export TZ='Asia/Shanghai'
+        npm i -g hexo-cli
+        npm i
+
+    - name: 安装插件
+      run: |
+        npm install hexo-browsersync --save
+        npm install hexo-bunyan --save
+        npm install hexo-deployer-git --save
+        npm install hexo-front-matter --save
+        npm install hexo-fs --save
+        npm install hexo-generator-archive --save
+        npm install hexo-generator-baidu-sitemap --save
+        npm install hexo-generator-category --save
+        npm install hexo-generator-feed --save
+        npm install hexo-generator-index --save
+        npm install hexo-generator-sitemap --save
+        npm install hexo-generator-tag --save
+        npm install hexo-i18n --save
+        npm install hexo-log --save
+        npm install hexo-pagination --save
+        npm install hexo-renderer-ejs --save
+        npm install hexo-renderer-jade --save
+        npm install hexo-renderer-less --save
+        npm install hexo-renderer-marked --save
+        npm install hexo-renderer-sass --save
+        npm install hexo-renderer-stylus --save
+        npm install hexo-server --save
+        npm install hexo-util --save
+
+    - name: 部署博客
+      run: |
+        rm -rf .deploy_git
+        hexo g && hexo douban && hexo deploy
+        rm ~/.ssh/id_rsa
