@@ -32,5 +32,5 @@ jobs:
       uses: sma11black/hexo-action@v1.0.0
       with:
         deploy_key: ${{ secrets.DEPLOY_KEY }}
-        user_name: EmmaWang90
+        user_name: github-action
         user_email: wdanmail@163.com
