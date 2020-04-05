@@ -17,9 +17,9 @@ jobs:
         submodules: true # Checkout private submodules(themes or something else). 当有子模块时切换分支？
 
     - name: 设置 Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
 
     - name: 配置 Git 环境
       env:
