@@ -1,11 +1,11 @@
 # Version of the Icarus theme that is currently used
 version: 2.3.0
 # Path or URL to the website's icon
-favicon: /images/horse.jpg
+favicon: /images/ew.jpg
 # Path or URL to RSS atom.xml
 rss: /atom.xml
 # Path or URL to the website's logo to be shown on the left of the navigation bar or footer
-logo: /images/horse.jpg
+logo: /images/ew.jpg
 # Open Graph metadata
 # https://hexo.io/docs/helpers.html#open-graph
 open_graph:
