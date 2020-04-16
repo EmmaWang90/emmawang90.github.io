@@ -28,9 +28,10 @@ categories:
    hexo new 使用图片
    ```
 
-   {% asset_path hexo-new.jpg %}
-   {% asset_img hexo-new.jpg [title] %}
-   {% asset_link hexo-new.jpg [title] %}
+   {% asset_path hexo-new.PNG %}
+   {% asset_img hexo-new.PNG [title] %}
+   {% asset_link hexo-new.PNG [title] %}
+   ![](hexo-new.PNG)
 4. 拷贝图片到博客目录中，这里将hexo-new.PNG拷贝到使用图片文件夹中。
 
 5. 创建博客，并在博客文档中引用。-->在上面就用上了图片。
