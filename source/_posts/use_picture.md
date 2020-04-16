@@ -39,4 +39,5 @@ categories:
 # 再插入一个美美的图片来结尾吧
 
 ![alt](girl.jpg)
+![](girl.jpg)
 
