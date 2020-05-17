@@ -99,6 +99,7 @@ menu:
   archives: /archives/ || archive
   #schedule: /schedule/ || calendar
   sitemap: /sitemap.xml || sitemap
+  record: /record/ || record
   rss: /atom.xml
   #commonweal: /404/ || heartbeat
 
