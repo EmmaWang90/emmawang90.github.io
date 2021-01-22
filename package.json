@@ -6,6 +6,7 @@
     "version": "3.9.0"
   },
   "dependencies": {
+    "chart.js": "^2.9.4",
     "hexo": "^3.7.0",
     "hexo-asset-image": "git+https://github.com/CodeFalling/hexo-asset-image.git",
     "hexo-browsersync": "^0.3.0",
@@ -24,6 +25,8 @@
     "hexo-renderer-sass": "^0.4.0",
     "hexo-renderer-stylus": "^0.3.3",
     "hexo-server": "^0.3.1",
+    "hexo-tag-echarts": "^1.0.0",
+    "hexo-tag-echarts4": "^1.0.1",
     "save": "^2.4.0"
   },
   "devDependencies": {
