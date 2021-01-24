@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="web,servlet,war,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Emma Wang" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="web应用基础概念web容器也叫servlet容器，负责管理servlet的生命周期、将URL映射到特定的servlet，并确保URL请求者有正确的访问权限。web容器实现了Java EE体系结构的Web组件契约，此体系结构为其他web组建指定运行时环境，包括安全性、并发性、生命周期管理、事务、附属和其他服务。 其中比较常见的容器有tomcat、glassfish、jetty。 ServletSe">
+<meta name="keywords" content="web,servlet,war">
+<meta property="og:type" content="article">
+<meta property="og:title" content="web应用基础概念">
+<meta property="og:url" content="https://emmawang90.github.io/2019/02/10/2019-2-10-web应用基础概念/index.html">
+<meta property="og:site_name" content="Emma Wang">
+<meta property="og:description" content="web应用基础概念web容器也叫servlet容器，负责管理servlet的生命周期、将URL映射到特定的servlet，并确保URL请求者有正确的访问权限。web容器实现了Java EE体系结构的Web组件契约，此体系结构为其他web组建指定运行时环境，包括安全性、并发性、生命周期管理、事务、附属和其他服务。 其中比较常见的容器有tomcat、glassfish、jetty。 ServletSe">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-01-24T08:25:12.445Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="web应用基础概念">
+<meta name="twitter:description" content="web应用基础概念web容器也叫servlet容器，负责管理servlet的生命周期、将URL映射到特定的servlet，并确保URL请求者有正确的访问权限。web容器实现了Java EE体系结构的Web组件契约，此体系结构为其他web组建指定运行时环境，包括安全性、并发性、生命周期管理、事务、附属和其他服务。 其中比较常见的容器有tomcat、glassfish、jetty。 ServletSe">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://emmawang90.github.io/2019/02/10/2019-2-10-web应用基础概念/">
+
+
+
+
+
+  <title>web应用基础概念 | Emma Wang</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Emma Wang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            Sitemap
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-record">
+          <a href="/categories/记录" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-record"></i> <br>
+            
+            record
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-rss">
+          <a href="/atom.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            rss
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://emmawang90.github.io/2019/02/10/2019-2-10-web应用基础概念/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Emma Wang">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Emma Wang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">web应用基础概念</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-10T03:50:13+00:00">
+                2019-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="web应用基础概念"><a href="#web应用基础概念" class="headerlink" title="web应用基础概念"></a>web应用基础概念</h1><h2 id="web容器"><a href="#web容器" class="headerlink" title="web容器"></a>web容器</h2><p>也叫servlet容器，负责管理servlet的生命周期、将URL映射到特定的servlet，并确保URL请求者有正确的访问权限。web容器实现了Java EE体系结构的Web组件契约，此体系结构为其他web组建指定运行时环境，包括安全性、并发性、生命周期管理、事务、附属和其他服务。</p>
+<p>其中比较常见的容器有tomcat、glassfish、jetty。</p>
+<h2 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h2><p>Servlet是web容器中管理的、用于为客户端请求提供服务的类。部署web服务时，servlet由web容器进行管理。</p>
+<p>servlet的生命周期有三个阶段，<code>init()</code>，<code>service()</code>和<code>destroy()</code>。它们由每个servlet实现，并在特定时间由web容器调用。</p>
+<ul>
+<li>在servlet <a href="https://en.wikipedia.org/wiki/Object_lifetime" target="_blank" rel="noopener">生命周期的</a>初始化阶段，Web容器通过调用<a href="http://docs.oracle.com/javaee/7/api/javax/servlet/Servlet.html#init" target="_blank" rel="noopener"><code>init()</code></a>方法初始化servlet实例，并传递实现该<a href="http://docs.oracle.com/javaee/7/api/javax/servlet/ServletConfig.html" target="_blank" rel="noopener"><code>javax.servlet.ServletConfig</code></a>接口的对象。此配置对象允许servlet 从Web应用程序访问<a href="https://en.wikipedia.org/wiki/Attribute%E2%80%93value_pair" target="_blank" rel="noopener">名称 - 值</a>初始化参数。</li>
+<li>初始化之后，servlet实例可以为客户端请求提供服务。每个<a href="https://en.wikipedia.org/wiki/HTTP_request#Request_message" target="_blank" rel="noopener">请求</a>都在自己的独立线程中提供服务。Web容器<code>service()</code>为每个请求调用servlet 的方法。该<code>service()</code>方法确定正在进行的请求的类型，并将其分派给适当的方法来处理请求。servlet的开发人员必须为这些方法提供实现。如果对servlet未实现的方法发出请求，则调用父类的方法，通常会导致将错误返回给请求者。</li>
+<li>最后，Web容器调用<code>destroy()</code>使servlet停止服务的方法。这个<code>destroy()</code>方法<code>init()</code>在servlet的生命周期中只调用一次。</li>
+</ul>
+<p>以下是这些方法的典型用户场景。</p>
+<ol>
+<li><p>假设用户请求访问URL</p>
+<ul>
+<li>然后，浏览器为此URL生成HTTP请求。</li>
+<li>然后将此请求发送到适当的服务器。</li>
+</ul>
+</li>
+<li><p>HTTP请求由Web服务器接收并转发到servlet容器。</p>
+<ul>
+<li>容器将此请求映射到特定的servlet。</li>
+<li>动态检索servlet并将其加载到容器的地址空间中。</li>
+</ul>
+</li>
+<li><p>容器调用init()</p>
+<p>servlet 的方法。</p>
+<ul>
+<li>仅当servlet首次加载到内存中时才会调用此方法。</li>
+<li>可以将初始化参数传递给servlet，以便它可以自行配置。</li>
+</ul>
+</li>
+<li><p>容器调用service()方法。</p>
+<ul>
+<li>调用此方法来处理HTTP请求。</li>
+<li>servlet可以读取HTTP请求中提供的数据。</li>
+<li>servlet还可以为客户端制定HTTP响应。</li>
+</ul>
+</li>
+<li><p>servlet保留在容器的地址空间中，可用于处理从客户端收到的任何其他HTTP请求。</p>
+<ul>
+<li><code>service()</code>为每个HTTP请求调用该方法。</li>
+</ul>
+</li>
+<li><p>在某些时候，容器可能决定从其内存中卸载servlet。</p>
+<ul>
+<li>做出此决定的算法特定于每个容器。</li>
+</ul>
+</li>
+<li><p>容器调用servlet的<code>destroy()</code>方法来放弃任何资源，例如为servlet分配的文件句柄; 重要数据可以保存到持久性存储中。</p>
+</li>
+<li><p>然后可以对为servlet及其对象分配的内存进行垃圾回收。</p>
+</li>
+</ol>
+<h2 id="WAR包"><a href="#WAR包" class="headerlink" title="WAR包"></a>WAR包</h2><p>war包是Sun提出的一种web应用程序格式，与jar类似，是很多文件的压缩包。</p>
+<p>war包中的文件按照一定目录结构来组织。通常其根目录下包含有html和jsp文件，或者包含有这两种文件的目录，另外还有WEB-INF目录。通常在WEB-INF目录下含有一个web.xml文件和一个classes目录，web.xml是这个应用的配置文件，而classes目录下则包含编译好的servlet类和jsp，或者servlet所依赖的其他类（如JavaBean）。通常这些所依赖的类也可以打包成jar包放在WEB-INF下的lib目录下。</p>
+<p>以Tomcat来说，将war包放置在其\webapps\目录下，然后启动Tomcat，这个包就会自动解压，就相当于发布了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+            <a href="/tags/servlet/" rel="tag"># servlet</a>
+          
+            <a href="/tags/war/" rel="tag"># war</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/09/maven-maven-plugin/" rel="next" title="maven插件入门">
+                <i class="fa fa-chevron-left"></i> maven插件入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/10/maven-maven打包/" rel="prev" title="maven打包">
+                maven打包 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Emma Wang</p>
+              <p class="site-description motion-element" itemprop="description">人生马拉松</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#web应用基础概念"><span class="nav-number">1.</span> <span class="nav-text">web应用基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#web容器"><span class="nav-number">1.1.</span> <span class="nav-text">web容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Servlet"><span class="nav-number">1.2.</span> <span class="nav-text">Servlet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WAR包"><span class="nav-number">1.3.</span> <span class="nav-text">WAR包</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Emma Wang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

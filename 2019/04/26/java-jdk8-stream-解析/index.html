@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="jdk8, stream, java,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Emma Wang" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="最近在做性能优化的工作，很多同事使用了jdk8提供的stream，但是并没有争取正确使用它们，反而造成性能的下降和代码的冗余，并且难以调试和跟踪。这里，为了涨到正确的用法，需要详细了解stream。 Stream介绍12public interface Stream&amp;lt;T&amp;gt;extends BaseStream&amp;lt;T,Stream&amp;lt;T&amp;gt;&amp;gt; 据java api中的说明，">
+<meta name="keywords" content="jdk8, stream, java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jdk 8 stream 详解">
+<meta property="og:url" content="https://emmawang90.github.io/2019/04/26/java-jdk8-stream-解析/index.html">
+<meta property="og:site_name" content="Emma Wang">
+<meta property="og:description" content="最近在做性能优化的工作，很多同事使用了jdk8提供的stream，但是并没有争取正确使用它们，反而造成性能的下降和代码的冗余，并且难以调试和跟踪。这里，为了涨到正确的用法，需要详细了解stream。 Stream介绍12public interface Stream&amp;lt;T&amp;gt;extends BaseStream&amp;lt;T,Stream&amp;lt;T&amp;gt;&amp;gt; 据java api中的说明，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.oracle.com/ocom/groups/public/@otn/documents/digitalasset/2179048.jpg">
+<meta property="og:updated_time" content="2021-01-24T08:25:12.453Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="jdk 8 stream 详解">
+<meta name="twitter:description" content="最近在做性能优化的工作，很多同事使用了jdk8提供的stream，但是并没有争取正确使用它们，反而造成性能的下降和代码的冗余，并且难以调试和跟踪。这里，为了涨到正确的用法，需要详细了解stream。 Stream介绍12public interface Stream&amp;lt;T&amp;gt;extends BaseStream&amp;lt;T,Stream&amp;lt;T&amp;gt;&amp;gt; 据java api中的说明，">
+<meta name="twitter:image" content="https://www.oracle.com/ocom/groups/public/@otn/documents/digitalasset/2179048.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://emmawang90.github.io/2019/04/26/java-jdk8-stream-解析/">
+
+
+
+
+
+  <title>jdk 8 stream 详解 | Emma Wang</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Emma Wang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            Sitemap
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-record">
+          <a href="/categories/记录" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-record"></i> <br>
+            
+            record
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-rss">
+          <a href="/atom.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            rss
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://emmawang90.github.io/2019/04/26/java-jdk8-stream-解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Emma Wang">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Emma Wang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">jdk 8 stream 详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-26T09:08:41+00:00">
+                2019-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在做性能优化的工作，很多同事使用了jdk8提供的stream，但是并没有争取正确使用它们，反而造成性能的下降和代码的冗余，并且难以调试和跟踪。这里，为了涨到正确的用法，需要详细了解stream。</p>
+<h1 id="Stream介绍"><a href="#Stream介绍" class="headerlink" title="Stream介绍"></a>Stream介绍</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Stream</span>&lt;<span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">extends</span> <span class="title">BaseStream</span>&lt;<span class="title">T</span>,<span class="title">Stream</span>&lt;<span class="title">T</span>&gt;&gt;</span></span><br></pre></td></tr></table></figure>
+<p>据java api中的说明， stream is a sequence of elements supporting sequential and parallel aggregate operations，是支持顺序和并发操作的一组元素。</p>
+<ul>
+<li><p>Sequence of elements: a stream provides an interface to a sequenced set of values of a spectific element type. However, streams don’t actually store elements; they are computed on demand.提供使用一个有序集合的接口，不存储，按需计算。</p>
+</li>
+<li><p>Source: Streams consume from a data-providing source such as collections, arrays, or I/O resources. 数据来自集合、数组或I/O。</p>
+</li>
+<li><h1 id="Aggregate-operations-Streams-support-SQL-like-operations-and-common-operations-from-functional-programming-languages-such-as-filter-map-reduce-find-match-sorted-and-so-on。"><a href="#Aggregate-operations-Streams-support-SQL-like-operations-and-common-operations-from-functional-programming-languages-such-as-filter-map-reduce-find-match-sorted-and-so-on。" class="headerlink" title="Aggregate operations: Streams support SQL-like operations and common operations from functional programming languages, such as filter, map , reduce, find, match, sorted, and so on。"></a>Aggregate operations: Streams support SQL-like operations and common operations from functional programming languages, such as filter, map , reduce, find, match, sorted, and so on。</h1></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sum = widgets.stream()</span><br><span class="line">                      .filter(w -&gt; w.getColor() == RED)</span><br><span class="line">                      .mapToInt(w -&gt; w.getWeight())</span><br><span class="line">                      .sum();</span><br></pre></td></tr></table></figure>
+<p>为了执行操作，stream 操作会被组成一个stream pipeline，这个stream pipeline包含：</p>
+<ol>
+<li><p>一个数据源（可以是数组、集合、生产者、I/O等）</p>
+</li>
+<li><p>零个或多个立即执行的操作（将一个stream转换为另一个stream，比如filter(Perdicate）)</p>
+</li>
+<li><p>一个结束操作，产生一个结果或side-effect，如count()和forEach(Consumer)</p>
+<p>直到结束操作被初始化，stream中的数据才会被计算，源中的元素被按需消费。</p>
+</li>
+</ol>
+<p>   集合和stream，有一些非常相似的地方，但是它们的目的是不同的。集合主要关系的是如何有效管理和获取其中的而数据，而stream不提供方法获取或操作内部的数据，只关心对源的描述和对整个源的计算操作。如果已有的stream操作不满足需求，而可以使用BaseStream.iterator()和BaseStream.spliterator()将stream转换成iterator。</p>
+<p>一个stream pipeline，可以被看作对stream source的查询。除非source被明确声明为concurrent modification，如ConcurrentHashMap，否则如果一边查询一边修改stream，会有一些不可预料或错误的后果。</p>
+<p>大多数stream操作接受描述用户特定行为的参数，如w-&gt;w.getWeight()作为mapToInt的参数。为了保证结果正确，这些行为参数需要满足以下条件：</p>
+<ol>
+<li>不能修改stream source；</li>
+<li>大多数情况下必须是无状态的，他们的结果不能依赖于在执行stream pipeline时会改变的状态。</li>
+</ol>
+<p>这些参数大多数情况下时一个funtional interface，比如Function，或lambda表达式或方法引用。除非特别声明，这些参数不能为null。</p>
+<p>一个stream只能被操作一次，不能同时做为两个或多个pipeline的源，可能会抛出IllegalStateException。然而，由于一些流操作可能返回其接收器而不是新的流对象，所以在所有情况下可能无法检测到重用。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>在工作中，大多数情况下，开发人员根据一个list或set生成一个stream并进行一些操作，如</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list.stream.map(entity-&gt;entity.getId()).collect(toSet());</span><br></pre></td></tr></table></figure>
+<p>或执行一些并发操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">list.parallelStream().forEach(entity-&gt; &#123;</span><br><span class="line">    /*操作entity*/</span><br><span class="line">&#125;）;</span><br></pre></td></tr></table></figure>
+<p>有时候需要异步执行并等待支持完成，这时候容易写下以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Integer[] integers = <span class="keyword">new</span> Integer[<span class="number">1000</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; integers.length; i ++)&#123;</span><br><span class="line">            integers[i] = Integer.valueOf(i);</span><br><span class="line">        &#125;</span><br><span class="line">        Arrays.asList(integers).stream()</span><br><span class="line">                .map(integer -&gt; &#123;</span><br><span class="line">                    CompletableFuture completableFuture = CompletableFuture.runAsync(()-&gt;&#123;</span><br><span class="line">                        logger.info(<span class="string">"begin to process integer:&#123;&#125;"</span>, integer);</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            Thread.sleep(<span class="number">50</span>);</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                            logger.error(<span class="string">"interupt"</span>, e);</span><br><span class="line">                        &#125;</span><br><span class="line">                        logger.info(<span class="string">"end to process integer:&#123;&#125;"</span>, integer);</span><br><span class="line">                    &#125;);</span><br><span class="line">                    <span class="keyword">return</span> completableFuture;</span><br><span class="line">                &#125;)</span><br><span class="line">                .forEach(CompletableFuture::join);</span><br></pre></td></tr></table></figure>
+<p>在代码中，使用map将integer进行异步处理，并返回Completable对象，在forEach中执行Completable.join。下面是日志，从日志上看，所有的数据都被顺序处理的，并没有真正被多线程处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[11:54:19:539] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:0</span><br><span class="line">[11:54:19:592] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:0</span><br><span class="line">[11:54:19:592] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:1</span><br><span class="line">[11:54:19:643] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:1</span><br><span class="line">[11:54:19:643] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:2</span><br><span class="line">[11:54:19:694] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:2</span><br><span class="line">[11:54:19:694] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:3</span><br><span class="line">[11:54:19:745] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:3</span><br><span class="line">[11:54:19:745] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:4</span><br><span class="line">[11:54:19:796] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:4</span><br><span class="line">[11:54:19:796] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:5</span><br><span class="line">[11:54:19:846] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:5</span><br><span class="line">[11:54:19:846] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:6</span><br><span class="line">[11:54:19:897] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:6</span><br><span class="line">[11:54:19:897] [INFO] - ForkJoinPool.commonPool-worker-1 - begin to process integer:7</span><br><span class="line">[11:54:19:948] [INFO] - ForkJoinPool.commonPool-worker-1 - end to process integer:7</span><br></pre></td></tr></table></figure>
+<p>原因在于这是一个顺序的stream，在流被处理时，对每个一个数据执行所有的操作，如对于integer，先执行map操作，将数据放入异步线程池中处理，然后执行forEach中的CompletableFuture.join操作，所以只有当前一个数据被完全处理完，第二个数据才开始被执行。</p>
+<p>修改代码，将CompletableFuture收集到集合中，然后对每个对象执行join，等待所有数据被处理完成。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Integer[] integers = <span class="keyword">new</span> Integer[<span class="number">1000</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; integers.length; i ++)&#123;</span><br><span class="line">    integers[i] = Integer.valueOf(i);</span><br><span class="line">&#125;</span><br><span class="line">Set&lt;CompletableFuture&gt; completableFutureSet = Arrays.asList(integers).stream()</span><br><span class="line">        .map(integer -&gt; &#123;</span><br><span class="line">            CompletableFuture completableFuture = CompletableFuture.runAsync(()-&gt;&#123;</span><br><span class="line">                logger.info(<span class="string">"begin to process integer:&#123;&#125;"</span>, integer);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">50</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    logger.error(<span class="string">"interupt"</span>, e);</span><br><span class="line">                &#125;</span><br><span class="line">                logger.info(<span class="string">"end to process integer:&#123;&#125;"</span>, integer);</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="keyword">return</span> completableFuture;</span><br><span class="line">        &#125;)</span><br><span class="line">        .collect(Collectors.toSet());</span><br><span class="line">completableFutureSet.stream().forEach(CompletableFuture::join);</span><br></pre></td></tr></table></figure>
+<p>此时的日志显示数据被多线程处理了。代码中没有设置线程池，默认使用ForkJoinPool.commonPool，线程池的最大线程数为7。</p>
+<h1 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h1><p>stream接口定义了很多操作，这些操作可以被分为两类：</p>
+<p><img src="https://www.oracle.com/ocom/groups/public/@otn/documents/digitalasset/2179048.jpg" alt="streams-f1"></p>
+<ol>
+<li>filter, sorted, map，可以被串联形成pipeline，这些操作被称为intermediat operations，他们的返回类型为stream。</li>
+<li>collect，结束pipeline，返回结果，被称为terminal operations，返回list， integer，甚至void，但不是stream。</li>
+</ol>
+<p>intermedia operations不会执行任何处理，直到stream pipleline上被添加terminal operation。intermediate operations can usually be “merged” and processed into <strong>a single pass</strong> by the terminal operation.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>);</span><br><span class="line">List&lt;Integer&gt; twoEvenSquares = </span><br><span class="line">    numbers.stream()</span><br><span class="line">           .filter(n -&gt; &#123;</span><br><span class="line">                    System.out.println(<span class="string">"filtering "</span> + n); </span><br><span class="line">                    <span class="keyword">return</span> n % <span class="number">2</span> == <span class="number">0</span>;</span><br><span class="line">                  &#125;)</span><br><span class="line">           .map(n -&gt; &#123;</span><br><span class="line">                    System.out.println(<span class="string">"mapping "</span> + n);</span><br><span class="line">                    <span class="keyword">return</span> n * n;</span><br><span class="line">                  &#125;)</span><br><span class="line">           .limit(<span class="number">2</span>)</span><br><span class="line">           .collect(toList());</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">filtering 1</span><br><span class="line">filtering 2</span><br><span class="line">mapping 2</span><br><span class="line">filtering 3</span><br><span class="line">filtering 4</span><br><span class="line">mapping 4</span><br></pre></td></tr></table></figure>
+<p>上例中limit(2)使用short-circuiting，因此实际运行时，只需要处理一部分流就可以返回结果。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/jdk8-stream-java/" rel="tag"># jdk8, stream, java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/10/maven-maven-dependency/" rel="next" title="maven-dependency">
+                <i class="fa fa-chevron-left"></i> maven-dependency
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/03/diary-每日感想/" rel="prev" title="每日感想-2019-5-3">
+                每日感想-2019-5-3 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Emma Wang</p>
+              <p class="site-description motion-element" itemprop="description">人生马拉松</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Stream介绍"><span class="nav-number">1.</span> <span class="nav-text">Stream介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aggregate-operations-Streams-support-SQL-like-operations-and-common-operations-from-functional-programming-languages-such-as-filter-map-reduce-find-match-sorted-and-so-on。"><span class="nav-number">2.</span> <span class="nav-text">Aggregate operations: Streams support SQL-like operations and common operations from functional programming languages, such as filter, map , reduce, find, match, sorted, and so on。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作"><span class="nav-number">4.</span> <span class="nav-text">操作</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Emma Wang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
